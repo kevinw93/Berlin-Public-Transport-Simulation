@@ -1,8 +1,10 @@
 public class Location implements Comparable<Location> {
     private String locationId;  
     private String name;
+    private double xCoord;
+    private double yCoord;
 
-    public Location(String locationId, String name) {
+    public Location(String locationId, String name, double x, double y) {
         if (locationId == null || locationId.trim().isEmpty()) {
             throw new IllegalArgumentException("id can't be null or empty");
         }
@@ -11,6 +13,8 @@ public class Location implements Comparable<Location> {
         }
         this.locationId = locationId.trim();
         this.name = name.trim();
+        this.xCoord = x;
+        this.yCoord = y;
     }
 
     public String getLocationId() {
@@ -19,6 +23,22 @@ public class Location implements Comparable<Location> {
     public String getName() {
         return name;
     }
+    public double getXCoord() {
+        return xCoord;
+    }
+    public double getYCoord() {
+        return yCoord;
+    }
+    // calculates the Euclidean distance between this location and another location
+    public double distanceTo(Location other) {
+        if (other == null) {
+            throw new IllegalArgumentException("Input location is null");
+        }
+        double dx = this.xCoord - other.xCoord;
+        double dy = this.yCoord - other.yCoord;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -33,7 +53,8 @@ public class Location implements Comparable<Location> {
 
     @Override
     public String toString() {
-        return String.format("ID: %s | Name: %s", this.locationId, this.name);
+        String format = "ID: %s | Name: %s | Coordinate: (%.2f, %.2f)";
+        return String.format(format, this.locationId, this.name, this.xCoord, this.yCoord);
     }
 
     @Override

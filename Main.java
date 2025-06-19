@@ -19,6 +19,7 @@ public class Main {
     private static List<Vehicle> vList = new ArrayList<>();
     private static List<Location> lList = new ArrayList<>();
     private static List<Route> rList = new ArrayList<>();
+    private static SimulationManager simManager = SimulationManager.getInstance();
 
     
     public static void main(String[] args) {
@@ -34,7 +35,8 @@ public class Main {
                     System.out.println("1. Vehicle");
                     System.out.println("2. Location");
                     System.out.println("3. Route");
-                    System.out.println("4. Exit");
+                    System.out.println("4. Simulation");
+                    System.out.println("5. Exit");
                     System.out.print("Choose an option: ");
                     String mainSwitch = scanner.nextLine().trim();
 
@@ -49,10 +51,13 @@ public class Main {
                             menuState = "ROUTE";
                             break;
                         case "4":
+                            menuState = "SIMULATION";
+                            break;
+                        case "5":
                             exit = true;
                             break;
                         default:
-                            System.out.println(ANSI_RED + "Must enter 1-4, try again." + ANSI_RESET);
+                            System.out.println(ANSI_RED + "Must enter 1-5, try again." + ANSI_RESET);
                     }
                     break;
 
@@ -155,6 +160,44 @@ public class Main {
                             System.out.println(ANSI_RED + "Must enter 1-9, try again." + ANSI_RESET);
                     }
                     break;
+                case "SIMULATION":
+                    System.out.println(ANSI_CYAN + "\nSimulation Menu" + ANSI_RESET);
+                    System.out.println("1. Display current time");
+                    System.out.println("2. Advance simulation time");
+                    System.out.println("3. Show next event");
+                    System.out.println("4. Execute next event");
+                    System.out.println("5. Show vehicle status");
+                    System.out.println("6. Start vehicle on route");
+                    System.out.println("7. Back to main menu");
+                    System.out.print("Choose an option: ");
+                    String simSwitch = scanner.nextLine().trim();
+                    
+                    switch (simSwitch) {
+                        case "1":
+                            showTime();
+                            break;
+                        case "2":
+                            advanceTime();
+                            break;
+                        case "3":
+                            showEvent();
+                            break;
+                        case "4":
+                            executeEvent();
+                            break;
+                        case "5":
+                            vehicleStatus();
+                            break;
+                        case "6":
+                            startVehicleMovement();
+                            break;
+                        case "7":
+                            menuState = "MAIN";
+                            break;
+                        default:
+                            System.out.println(ANSI_RED + "Must enter 1-7, try again!!" + ANSI_RESET);
+                    }
+                    break;
             }
         }
 
@@ -232,13 +275,18 @@ public class Main {
             if (capacity <= 0) {
                 throw new NumberFormatException();
             }
+            System.out.print("Enter vehicle speed: ");
+            double speed = Double.parseDouble(scanner.nextLine().trim());
+            if (speed <= 0) {
+                throw new NumberFormatException();
+            }
 
-            Vehicle v = new Vehicle(vehicleID, name, type, capacity);
+            Vehicle v = new Vehicle(vehicleID, name, type, capacity, speed);
             vList.add(v);
             System.out.println("Vehicle added: " + vehicleID);
 
         } catch (NumberFormatException e) {
-            System.out.println(ANSI_RED + "Capacity must be a postive integer." + ANSI_RESET);
+            System.out.println(ANSI_RED + "Capacity must be a postive integer and speed must be a positive number." + ANSI_RESET);
             return;
         } catch (IllegalArgumentException e) {
             System.out.println(ANSI_RED + "Error: " + e.getMessage() + ANSI_RESET);
@@ -256,8 +304,8 @@ public class Main {
         List<Vehicle> sorted = new ArrayList<>(vList);
         sorted.sort(null);
         for (Vehicle v : sorted) {
-            System.out.printf("ID: %s | Name: %s | Type: %s | Capacity: %d\n",
-                v.getVehicleId(), v.getName(), v.getVehicleType(), v.getCapacity());
+            System.out.printf("ID: %s | Name: %s | Type: %s | Capacity: %d | Speed: %.2f\n",
+                v.getVehicleId(), v.getName(), v.getVehicleType(), v.getCapacity(), v.getSpeed());
         }
         
     }
@@ -306,11 +354,20 @@ public class Main {
         System.out.println("Enter location name: ");
         String name = scanner.nextLine().trim();
 
+        
         try {
-            Location l = new Location(locationID, name);
+            System.out.println("Enter x-coordinate of location: ");
+            double xCoord = Double.parseDouble(scanner.nextLine().trim());
+    
+            System.out.println("Enter y-coordinate of location: ");
+            double yCoord = Double.parseDouble(scanner.nextLine().trim());
+
+            Location l = new Location(locationID, name, xCoord, yCoord);
             lList.add(l);
             System.out.println("Location added: " + locationID);
 
+        } catch (NumberFormatException e) {
+            System.out.println(ANSI_RED + "x-coordinate and y-coordinate must be an decimal number." + ANSI_RESET);
         } catch (IllegalArgumentException e) {
             System.out.println(ANSI_RED + "Error: " + e.getMessage() + ANSI_RESET);
         }
@@ -327,7 +384,8 @@ public class Main {
         List<Location> sorted = new ArrayList<>(lList);
         sorted.sort(null);
         for (Location l : sorted) {
-            System.out.printf("ID: %s | Name: %s\n", l.getLocationId(), l.getName());
+            System.out.printf("ID: %s | Name: %s | Coordinate: (%.2f, %.2f)\n",
+                l.getLocationId(), l.getName(), l.getXCoord(), l.getYCoord());
         }
     }
     
@@ -355,7 +413,7 @@ public class Main {
         List<Vehicle> vehiclesAtLocation = new ArrayList<>();
         
         for (Vehicle v : vList) { 
-            if (location.equals(v.getLocation())) {
+            if (location.equals(v.getLocation()) && !(v.inTransit())) {
                 vehiclesAtLocation.add(v);
             }
         }
@@ -530,11 +588,26 @@ public class Main {
             return;
         }
 
+        
+        for (Vehicle v : route.getVehicles()) {
+            if (v.inTransit()) {
+                int currentPos = v.getRoutePosition();
+                int nextPos = (currentPos + 1) % route.getLocationCount();
+
+                if (nextPos == indexRemove) {
+                    System.out.println(ANSI_RED + "Cannot remove location at index " + indexRemove
+                            + " because vehicle " + v.getVehicleId() + " is in transit to it!" + ANSI_RESET);
+
+                    return;
+                }
+            }
+        }
         for (Vehicle v : route.getVehicles()) {
             if (v.getRoutePosition() == indexRemove) {
                 v.setAssignedRoute(null);
                 v.setLocation(null);
                 v.setRoutePosition(-1);
+                v.setInTransit(false);
                 route.removeVehicle(v); // make sure we remove vehicle from route when its location is removed
 
             } else if (v.getRoutePosition() > indexRemove) {
@@ -543,6 +616,7 @@ public class Main {
             }
         }
         route.removeLocationAt(indexRemove);
+        simManager.removeLocationEvent(route, indexRemove);
         System.out.println("The location at index " + indexRemove + " was remove from the route "
             + route.getName() + ".");
         
@@ -626,6 +700,16 @@ public class Main {
             return;
         }
 
+        System.out.print("Vehicle direction (enter left/right): ");
+        String direction = scanner.nextLine().trim().toLowerCase();
+        if (direction.equals("right") || direction.equals("r")) {
+            vehicle.setGoingRight(true);
+        } else if (direction.equals("left") || direction.equals("l")) {
+            vehicle.setGoingRight(false);
+        } else {
+            System.out.println(ANSI_RED + "Invalid input. Enter either 'left' or 'right'!" + ANSI_RESET);
+            return;
+        }
         vehicle.setLocation(route.getLocations().get(chosenPosition));
         vehicle.setRoutePosition(chosenPosition);
         vehicle.setAssignedRoute(route);
@@ -665,7 +749,10 @@ public class Main {
         vehicle.setAssignedRoute(null);
         vehicle.setRoutePosition(-1);
         vehicle.setLocation(null);
+        vehicle.setInTransit(false);
         System.out.println("Vehicle " + vehicle.getName() + " was removed from route " + route.getName()); 
+
+        simManager.removeVehicleEvent(vehicle);
     } 
 
     private static void showVehiclesOnRoute() { 
@@ -692,6 +779,114 @@ public class Main {
             System.out.printf("ID: %s | Name: %s | Type: %s\n", 
                 v.getVehicleId(), v.getName(), v.getVehicleType()); 
         } 
+    } 
+
+    private static void showTime() {
+        System.out.println("Current time is: " + simManager.getCurrentTime());
+    }
+
+    private static void advanceTime() {
+        System.out.println("Current time: " + simManager.getCurrentTime());
+        System.out.print("Enter minutes to advance: ");
+        try {
+            int minAdvance = Integer.parseInt(scanner.nextLine().trim());
+            if (minAdvance <= 0) {
+                System.out.println(ANSI_RED + "The number of minutes must be positive. Try again!" + ANSI_RESET);
+                return;
+            }
+            int newTime = simManager.getCurrentTime() + minAdvance;
+
+            while (simManager.hasNextEvent() && (simManager.getNextEventTime() <= newTime)) {
+               
+                simManager.executeNextEvent();
+            }
+
+            if (simManager.getCurrentTime() < newTime) {
+                simManager.advanceTime(newTime);
+            }
+            
+            System.out.println("The simulation time is now: " + simManager.getCurrentTime());
+
+            
+        } catch (NumberFormatException e) {
+            System.out.println(ANSI_RED + "Please enter an integer." + ANSI_RESET);
+        }
+        
+    }
+
+    private static void showEvent() {
+        simManager.displayNextEvents();
+
+    }
+
+    private static void executeEvent() {
+        simManager.executeNextEvent();
+
+    }
+
+    private static void vehicleStatus() {
+        System.out.println(ANSI_CYAN + "\nVehicle Status" + ANSI_RESET);
+
+        if (vList.isEmpty()) {
+            System.out.println(ANSI_RED + "There are no vehicles to display the status of." + ANSI_RESET);
+            return;
+
+        }
+        System.out.print("Enter vehicle ID: ");
+        String vehicleId = scanner.nextLine().trim();
+        Vehicle vehicle = findVehicleId(vehicleId);
+        if (vehicle == null) {
+            System.out.println(ANSI_RED + "Vehicle not found: " + vehicleId + ANSI_RESET);
+            return;
+
+        }
+        System.out.println(simManager.getVehicleStatus(vehicle));
+    }
+
+    private static void startVehicleMovement() {
+        System.out.print("Enter vehicle ID: ");
+        String vehicleId = scanner.nextLine().trim();
+        Vehicle vehicle = findVehicleId(vehicleId);
+        if (vehicle == null) {
+            System.out.println(ANSI_RED + "Vehicle not found: " + vehicleId + ANSI_RESET);
+            return;
+        }
+
+        if (vehicle.getAssignedRoute() == null) {
+            System.out.println(ANSI_RED + "Vehicle is not assigned to a route." + ANSI_RESET);
+            return;
+        }
+
+        if (vehicle.getLocation() == null) {
+            System.out.println(ANSI_RED + "Vehicle location is not set." + ANSI_RESET);
+            return;
+        }
+
+        
+        if (vehicle.getAssignedRoute().getLocations().size() <= 1) {
+            System.out.println(ANSI_RED + "Route must have at least 2 locations to schedule movement!" + ANSI_RESET);
+            return;
+
+        }
+
+        if (vehicle.inTransit()) {
+            System.out.println(ANSI_RED + "The vehicle is already in transit!" + ANSI_RESET);
+            return;
+
+        }
+
+        if (simManager.hasScheduledEvent(vehicle)) {
+            System.out.println(ANSI_RED + "The vehicle already has a scheduled event!" + ANSI_RESET);
+            return;
+
+        }
+
+        int departureTime = simManager.getCurrentTime() + 1;
+        Event event = new Event(departureTime, vehicle, vehicle.getLocation(), Event.EventType.DEPARTURE);
+        simManager.addEvent(event);
+        
+        System.out.println("Vehicle " + vehicle.getName() + " scheduled to start route at " + departureTime);
+
     }
 
 }

@@ -3,11 +3,15 @@ public class Vehicle implements Comparable<Vehicle> {
     private String name;
     private int capacity;
     private VehicleType vehicleType;
+    private double speed;
     private Route assignedRoute;
     private Location location;
     private int routePosition;
+    private int legProgress;
+    private boolean inTransit;
+    public boolean goingRight;
 
-    public Vehicle(String vehicleId, String name, VehicleType type, int capacity) {
+    public Vehicle(String vehicleId, String name, VehicleType type, int capacity, double speed) {
         if (vehicleId == null || vehicleId.trim().isEmpty()) {
             throw new IllegalArgumentException("ID can't be null or empty");
         }
@@ -15,8 +19,12 @@ public class Vehicle implements Comparable<Vehicle> {
         this.name = name;
         this.vehicleType = type;
         this.capacity = capacity;
+        this.speed = speed;
         this.routePosition = -1;
+        this.legProgress = 0;
         this.assignedRoute = null;
+        this.inTransit = false;
+        this.goingRight = false;
     }
 
     public String getVehicleId() {
@@ -29,6 +37,9 @@ public class Vehicle implements Comparable<Vehicle> {
 
     public int getCapacity() {
         return capacity;
+    }
+    public double getSpeed() {
+        return speed;
     }
     public Route getAssignedRoute() {
         return assignedRoute;
@@ -48,6 +59,12 @@ public class Vehicle implements Comparable<Vehicle> {
     public VehicleType getVehicleType() {
         return vehicleType;
     }
+    public boolean inTransit() {
+        return inTransit;
+    }
+    public boolean goingRight() {
+        return goingRight;
+    }
     public void setVehicleType(VehicleType vehicleType) {
         this.vehicleType = vehicleType;
     }
@@ -62,6 +79,21 @@ public class Vehicle implements Comparable<Vehicle> {
     
     public void setRoutePosition(int position) {
         this.routePosition = position;
+    }
+
+    public void setSpeed(double speed) {
+        if (speed <= 0) {
+            throw new IllegalArgumentException("Speed must be positive");
+        }
+        this.speed = speed;
+    }
+
+    public void setInTransit(boolean inTransit) {
+        this.inTransit = inTransit;
+    }
+
+    public void setGoingRight(boolean goingRight) {
+        this.goingRight = goingRight;
     }
 
     // removes the vehicle from its assigned route and resets position
@@ -86,10 +118,11 @@ public class Vehicle implements Comparable<Vehicle> {
     public String toString() {
         String locationInfo = (location != null) ? location.getName() : "No location";
         String routeInfo = (assignedRoute != null) ? assignedRoute.getName() : "No route";
+        String transitInfo = inTransit ? " (In Transit)" : "";
         
-        String format = "ID: %s | Name: %s | Type: %s | Capacity: %d | Location: %s | Route: %s";
+        String format = "ID: %s | Name: %s | Type: %s | Capacity: %d | Speed: %.2f | Location: %s | Route: %s%s";
         return String.format(format, this.vehicleId, this.name, this.vehicleType, 
-                           this.capacity, locationInfo, routeInfo);
+                           this.capacity, this.speed, locationInfo, routeInfo, transitInfo);
     }
 
     @Override
