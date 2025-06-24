@@ -36,7 +36,8 @@ public class Main {
                     System.out.println("2. Location");
                     System.out.println("3. Route");
                     System.out.println("4. Simulation");
-                    System.out.println("5. Exit");
+                    System.out.println("5. Test Scenario Setup");
+                    System.out.println("6. Exit");
                     System.out.print("Choose an option: ");
                     String mainSwitch = scanner.nextLine().trim();
 
@@ -54,10 +55,13 @@ public class Main {
                             menuState = "SIMULATION";
                             break;
                         case "5":
+                            setupTestScenario();
+                            break;
+                        case "6":
                             exit = true;
                             break;
                         default:
-                            System.out.println(ANSI_RED + "Must enter 1-5, try again." + ANSI_RESET);
+                            System.out.println(ANSI_RED + "Must enter 1-6, try again." + ANSI_RESET);
                     }
                     break;
 
@@ -887,6 +891,184 @@ public class Main {
         
         System.out.println("Vehicle " + vehicle.getName() + " scheduled to start route at " + departureTime);
 
+    }
+
+    private static void setupTestScenario() {
+        if (findVehicleId("v1") != null) {
+            System.out.println(ANSI_CYAN + "Test Scenario already run." + ANSI_RESET);
+            return;
+        }
+        System.out.println(ANSI_GREEN + "\nSetting up test scenario..." + ANSI_RESET);
+
+        Location stadium = new Location("l1", "stadium", 0, 5);
+        lList.add(stadium);
+
+        Location west = new Location("l2", "west", 1, 3);
+        lList.add(west);
+
+        Location castle = new Location("l3", "castle", 2, 0);
+        lList.add(castle);
+
+        Location port = new Location("l4", "port", 3, 10);
+        lList.add(port);
+
+        Location bahnhof = new Location("l5", "bahnhof", 4, 5);
+        lList.add(bahnhof);
+
+        Location north = new Location("l6", "north", 5, 8);
+        lList.add(north);
+
+        Location museum = new Location("l7", "museum", 5, 3);
+        lList.add(museum);
+
+        Location south = new Location("l8", "south", 6, 1);
+        lList.add(south);
+
+        Location tower = new Location("l9", "tower", 7, 4);
+        lList.add(tower);
+
+        Location east = new Location("l10", "east", 8, 4);
+        lList.add(east);
+
+        Location airport = new Location("l11", "airport", 10, 2);
+        lList.add(airport);
+
+        Location gate = new Location("l12", "gate", 9, 9);
+        lList.add(gate);
+
+        // ROUTES
+        Route line1 = new Route("r1", "line_1");
+        line1.addLocation(stadium, 0);
+        line1.addLocation(west, 1);
+        line1.addLocation(bahnhof, 2);
+        line1.addLocation(tower, 3);
+        line1.addLocation(east, 4);
+        line1.addLocation(airport, 5);
+        line1.addLocation(east, 6);
+        line1.addLocation(tower, 7);
+        line1.addLocation(bahnhof, 8);
+        line1.addLocation(west, 9);
+        rList.add(line1);
+
+        Route line2 = new Route("r2", "line_2");
+        line2.addLocation(port, 0);
+        line2.addLocation(north, 1);
+        line2.addLocation(bahnhof, 2);
+        line2.addLocation(west, 3);
+        line2.addLocation(castle, 4);
+        line2.addLocation(west, 5);
+        line2.addLocation(bahnhof, 6);
+        line2.addLocation(north, 7);
+        rList.add(line2);
+
+        Route line3 = new Route("r3", "line_3");
+        line3.addLocation(gate, 0);
+        line3.addLocation(north, 1);
+        line3.addLocation(bahnhof, 2);
+        line3.addLocation(tower, 3);
+        line3.addLocation(south, 4);
+        line3.addLocation(tower, 5);
+        line3.addLocation(bahnhof, 6);
+        line3.addLocation(north, 7);
+        rList.add(line3);
+
+        Route ring1 = new Route("r4", "ring_1");
+        ring1.addLocation(south, 0);
+        ring1.addLocation(castle, 1);
+        ring1.addLocation(bahnhof, 2);
+        ring1.addLocation(tower, 3);
+        ring1.addLocation(east, 4);
+        ring1.addLocation(tower, 5);
+        ring1.addLocation(bahnhof, 6);
+        ring1.addLocation(north, 7);
+        rList.add(ring1);
+
+        Route ring2 = new Route("r5", "ring_2");
+        ring2.addLocation(bahnhof, 0);
+        ring2.addLocation(museum, 1);
+        ring2.addLocation(tower, 2);
+        ring2.addLocation(bahnhof, 3);
+        ring2.addLocation(tower, 4);
+        ring2.addLocation(bahnhof, 5);
+        ring2.addLocation(north, 6);
+        ring2.addLocation(north, 7);
+        rList.add(ring2);
+
+        Route ring3 = new Route("r6", "ring_3");
+        ring3.addLocation(north, 0);
+        ring3.addLocation(bahnhof, 1);
+        ring3.addLocation(north, 2);
+        ring3.addLocation(port, 3);
+        ring3.addLocation(north, 4);
+        ring3.addLocation(gate, 5);
+        rList.add(ring3);
+
+        // VEHICLES
+        Vehicle sbahn_A = new Vehicle("v1", "sbahn_A", VehicleType.S_Bahn, 6, 60);
+        sbahn_A.setLocation(stadium);
+        sbahn_A.setAssignedRoute(line1);
+        sbahn_A.setRoutePosition(0);
+        sbahn_A.setGoingRight(true);
+        line1.addVehicle(sbahn_A);
+        vList.add(sbahn_A);
+
+        Vehicle ubahn_A = new Vehicle("v2", "ubahn_A", VehicleType.U_Bahn, 5, 45);
+        ubahn_A.setLocation(port);
+        ubahn_A.setAssignedRoute(line2);
+        ubahn_A.setRoutePosition(0);
+        ubahn_A.setGoingRight(true);
+        line2.addVehicle(ubahn_A);
+        vList.add(ubahn_A);
+
+        Vehicle bus_A = new Vehicle("v3", "bus_A", VehicleType.Bus, 3, 35);
+        bus_A.setLocation(north);
+        bus_A.setAssignedRoute(ring2);
+        bus_A.setRoutePosition(1);
+        bus_A.setGoingRight(true);
+        ring2.addVehicle(bus_A);
+        vList.add(bus_A);
+
+        Vehicle sbahn_C = new Vehicle("v4", "sbahn_C", VehicleType.S_Bahn, 8, 60);
+        sbahn_C.setLocation(bahnhof);
+        sbahn_C.setAssignedRoute(ring1);
+        sbahn_C.setRoutePosition(2);
+        sbahn_C.setGoingRight(true);
+        ring1.addVehicle(sbahn_C);
+        vList.add(sbahn_C);
+
+        Vehicle tram_A = new Vehicle("v5", "tram_A", VehicleType.Tram, 4, 40);
+        tram_A.setLocation(bahnhof);
+        tram_A.setAssignedRoute(ring3);
+        tram_A.setRoutePosition(2);
+        tram_A.setGoingRight(true);
+        ring3.addVehicle(tram_A);
+        vList.add(tram_A);
+
+        Vehicle sbahn_B = new Vehicle("v6", "sbahn_B", VehicleType.S_Bahn, 6, 60);
+        sbahn_B.setLocation(east);
+        sbahn_B.setAssignedRoute(line1);
+        sbahn_B.setRoutePosition(6);
+        sbahn_B.setGoingRight(true);
+        line1.addVehicle(sbahn_B);
+        vList.add(sbahn_B);
+
+        Vehicle ubahn_C = new Vehicle("v7", "ubahn_C", VehicleType.U_Bahn, 5, 45);
+        ubahn_C.setLocation(east);
+        ubahn_C.setAssignedRoute(line2);
+        ubahn_C.setRoutePosition(6);
+        ubahn_C.setGoingRight(true);
+        line2.addVehicle(ubahn_C);
+        vList.add(ubahn_C);
+
+        Vehicle ubahn_B = new Vehicle("v8", "ubahn_B", VehicleType.U_Bahn, 5, 45);
+        ubahn_B.setLocation(tower);
+        ubahn_B.setAssignedRoute(line3);
+        ubahn_B.setRoutePosition(7);
+        ubahn_B.setGoingRight(true);
+        line3.addVehicle(ubahn_B);
+        vList.add(ubahn_B);
+
+        System.out.println(ANSI_CYAN + "Scenario setup complete." + ANSI_RESET);
     }
 
 }
