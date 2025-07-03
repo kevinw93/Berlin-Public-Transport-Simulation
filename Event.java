@@ -55,6 +55,54 @@ public class Event implements Comparable<Event> {
         vehicle.setLocation(location);
         vehicle.setInTransit(false);
 
+        //  Initiate passenger exchange logic
+        int ridePassCur = vehicle.getRidingPass();
+        int arrPassLow = location.getDebarkMin();
+        int arrPassHigh = location.getDebarkMax();
+        int xferPassLow = location.getTransferMin();
+        int xferPassHigh = location.getTransferMax();
+        int boardPassLow = location.getEmbarkMin();
+        int boardPassHigh = location.getEmbarkMax();
+        int waitPassCur = location.getWaitingPassengers();
+        int capacity = vehicle.getCapacity();
+
+        // randomly generating a number to calculate how many passengers will debark
+        java.util.Random rand = new java.util.Random();
+        int arrPass = arrPassLow + rand.nextInt(arrPassHigh - arrPassLow + 1);
+        if (arrPass > ridePassCur) arrPass = ridePassCur;
+
+        // calculating transferring passengers with a new random number.
+        int xferPass = 0;
+        if (arrPass > 0) {
+            xferPass = xferPassLow + rand.nextInt(xferPassHigh - xferPassLow + 1);
+            if (xferPass > arrPass) xferPass = arrPass;
+        }
+        int homePass = arrPass - xferPass;
+
+        // calculating boarding passengers 
+        int boardPass = boardPassLow + rand.nextInt(boardPassHigh - boardPassLow + 1);
+        int availableSeats = capacity - (ridePassCur - arrPass);
+        int actualBoard = Math.min(boardPass, Math.max(0, availableSeats));
+        int delayPass = Math.max(0, boardPass - actualBoard);
+
+        int waitPassNext = waitPassCur - actualBoard + xferPass;
+        if (waitPassNext < 0) {
+            waitPassNext = 0;
+        }
+        int ridePassNext = ridePassCur - arrPass + actualBoard;
+
+        // Update state
+        vehicle.setRidingPass(ridePassNext);
+        location.setWaitingPassengers(waitPassNext);
+
+    
+        System.out.printf("Passenger exchange at %s:\n", location.getLocationId());
+        System.out.printf("  Debarked: %d (Home: %d, Transfers: %d)\n", arrPass, homePass, xferPass);
+        System.out.printf("  Boarded: %d\n", actualBoard);
+        System.out.printf("  Delayed: %d\n", delayPass);
+        System.out.printf("  Riders now: %d\n", ridePassNext);
+        System.out.printf("  Waiting now: %d\n", waitPassNext);
+
         // passenger exchange takes 1 min
         int departureTime = eventTime + 1;
         Event departureEvent = new Event(departureTime, vehicle, location, EventType.DEPARTURE);

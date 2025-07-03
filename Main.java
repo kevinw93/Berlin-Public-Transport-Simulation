@@ -70,7 +70,9 @@ public class Main {
                     System.out.println(ANSI_BLUE + "\nVehicle Menu" + ANSI_RESET);
                     System.out.println("1. Add a vehicle");
                     System.out.println("2. Display all vehicles");
-                    System.out.println("3. Back to main menu");
+                    System.out.println("3. Set vehicle capacity");
+                    System.out.println("4. Set vehicle rider count");
+                    System.out.println("5. Back to main menu");
                     System.out.print("Choose an option: ");
                     String vehicleSwitch = scanner.nextLine().trim();
 
@@ -82,10 +84,16 @@ public class Main {
                             showVehicle();
                             break;
                         case "3":
+                            setVehicleCapacity();
+                            break;
+                        case "4":
+                            setVehicleRiderCount();
+                            break;
+                        case "5":
                             menuState = "MAIN";
                             break;
                         default:
-                            System.out.println(ANSI_RED + "Must enter 1-3, try again." + ANSI_RESET);
+                            System.out.println(ANSI_RED + "Must enter 1-5, try again." + ANSI_RESET);
                     }
                     break;
 
@@ -95,7 +103,9 @@ public class Main {
                     System.out.println("1. Add a location");
                     System.out.println("2. Display all locations");
                     System.out.println("3. Show vehicles at location");
-                    System.out.println("4. Back to main menu");
+                    System.out.println("4. Set waiting passengers");
+                    System.out.println("5. Set passenger exchange ranges");
+                    System.out.println("6. Back to main menu");
                     System.out.print("Choose an option: ");
                     String locationSwitch = scanner.nextLine().trim();
 
@@ -110,10 +120,16 @@ public class Main {
                             showVehiclesAtLocation();
                             break;
                         case "4":
+                            setWaitingPassengers();
+                            break;
+                        case "5":
+                            setPassengerExchangeRanges();
+                            break;
+                        case "6":
                             menuState = "MAIN";
                             break;
                         default:
-                            System.out.println(ANSI_RED + "Must enter 1-4, try again." + ANSI_RESET);
+                            System.out.println(ANSI_RED + "Must enter 1-6, try again." + ANSI_RESET);
                     }
                     break;
 
@@ -366,7 +382,11 @@ public class Main {
             System.out.println("Enter y-coordinate of location: ");
             double yCoord = Double.parseDouble(scanner.nextLine().trim());
 
-            Location l = new Location(locationID, name, xCoord, yCoord);
+            System.out.println("Enter number of initial waiting passengers: ");
+            int pass = Integer.parseInt(scanner.nextLine().trim());
+            
+            
+            Location l = new Location(locationID, name, xCoord, yCoord, pass);
             lList.add(l);
             System.out.println("Location added: " + locationID);
 
@@ -388,8 +408,8 @@ public class Main {
         List<Location> sorted = new ArrayList<>(lList);
         sorted.sort(null);
         for (Location l : sorted) {
-            System.out.printf("ID: %s | Name: %s | Coordinate: (%.2f, %.2f)\n",
-                l.getLocationId(), l.getName(), l.getXCoord(), l.getYCoord());
+            System.out.printf("ID: %s | Name: %s | Coordinate: (%.2f, %.2f)| Waiting Passengers: %d\n",
+                l.getLocationId(), l.getName(), l.getXCoord(), l.getYCoord(), l.getWaitingPassengers());
         }
     }
     
@@ -900,40 +920,76 @@ public class Main {
         }
         System.out.println(ANSI_GREEN + "\nSetting up test scenario..." + ANSI_RESET);
 
-        Location stadium = new Location("l1", "stadium", 0, 5);
+        Location stadium = new Location("l1", "stadium", 0, 5, 8);
+        stadium.setDebarkRange(2, 6);
+        stadium.setEmbarkRange(1, 1);
+        stadium.setTransferRange(2, 3);
         lList.add(stadium);
 
-        Location west = new Location("l2", "west", 1, 3);
+        Location west = new Location("l2", "west", 1, 3, 2);
+        west.setDebarkRange(1, 2);
+        west.setEmbarkRange(1, 1);
+        west.setTransferRange(1, 1);
         lList.add(west);
 
-        Location castle = new Location("l3", "castle", 2, 0);
+        Location castle = new Location("l3", "castle", 2, 0, 5);
+        castle.setDebarkRange(1, 2);
+        castle.setEmbarkRange(1, 1);
+        castle.setTransferRange(1, 3);
         lList.add(castle);
 
-        Location port = new Location("l4", "port", 3, 10);
+        Location port = new Location("l4", "port", 3, 10, 3);
+        port.setDebarkRange(1, 1);
+        port.setEmbarkRange(1, 1);
+        port.setTransferRange(1, 1);
         lList.add(port);
 
-        Location bahnhof = new Location("l5", "bahnhof", 4, 5);
+        Location bahnhof = new Location("l5", "bahnhof", 4, 5, 10);
+        bahnhof.setDebarkRange(1, 4);
+        bahnhof.setEmbarkRange(3, 6);
+        bahnhof.setTransferRange(1, 6);
         lList.add(bahnhof);
 
-        Location north = new Location("l6", "north", 5, 8);
+        Location north = new Location("l6", "north", 5, 8, 3);
+        north.setDebarkRange(1, 2);
+        north.setEmbarkRange(1, 1);
+        north.setTransferRange(1, 2);
         lList.add(north);
 
-        Location museum = new Location("l7", "museum", 5, 3);
+        Location museum = new Location("l7", "museum", 5, 3, 8);
+        museum.setDebarkRange(2, 4);
+        museum.setEmbarkRange(2, 6);
+        museum.setTransferRange(1, 4);
         lList.add(museum);
 
-        Location south = new Location("l8", "south", 6, 1);
+        Location south = new Location("l8", "south", 6, 1, 3);
+        south.setDebarkRange(1, 2);
+        south.setEmbarkRange(1, 1);
+        south.setTransferRange(1, 1);
         lList.add(south);
 
-        Location tower = new Location("l9", "tower", 7, 4);
+        Location tower = new Location("l9", "tower", 7, 4, 5);
+        tower.setDebarkRange(1, 1);
+        tower.setEmbarkRange(1, 3);
+        tower.setTransferRange(1, 2);
         lList.add(tower);
 
-        Location east = new Location("l10", "east", 8, 4);
+        Location east = new Location("l10", "east", 8, 4, 2);
+        east.setDebarkRange(1, 2);
+        east.setEmbarkRange(1, 2);
+        east.setTransferRange(1, 1);
         lList.add(east);
 
-        Location airport = new Location("l11", "airport", 10, 2);
+        Location airport = new Location("l11", "airport", 10, 2, 10);
+        airport.setDebarkRange(3, 8);
+        airport.setEmbarkRange(1, 2);
+        airport.setTransferRange(2, 5);
         lList.add(airport);
 
-        Location gate = new Location("l12", "gate", 9, 9);
+        Location gate = new Location("l12", "gate", 9, 9, 5);
+        gate.setDebarkRange(1, 1);
+        gate.setEmbarkRange(1, 3);
+        gate.setTransferRange(1, 2);
         lList.add(gate);
 
         // ROUTES
@@ -1069,6 +1125,95 @@ public class Main {
         vList.add(ubahn_B);
 
         System.out.println(ANSI_CYAN + "Scenario setup complete." + ANSI_RESET);
+    }
+
+    // handling changing/initializing vehicle capacity
+    private static void setVehicleCapacity() {
+        System.out.print("Enter vehicle ID: ");
+        String id = scanner.nextLine().trim();
+        Vehicle v = findVehicleId(id);
+        if (v == null) {
+            System.out.println(ANSI_RED + "Vehicle not found." + ANSI_RESET);
+            return;
+        }
+        System.out.print("Enter new capacity: ");
+        try {
+            int cap = Integer.parseInt(scanner.nextLine().trim());
+            if (cap < 0) throw new NumberFormatException();
+            v.setCapacity(cap);
+            System.out.println(ANSI_GREEN + "Capacity updated." + ANSI_RESET);
+        } catch (Exception e) {
+            System.out.println(ANSI_RED + "Invalid input." + ANSI_RESET);
+        }
+    }
+
+
+    // handling cases for when the rider count for a vehicle needs to be changed
+    private static void setVehicleRiderCount() {
+        System.out.print("Enter vehicle ID: ");
+        String id = scanner.nextLine().trim();
+        Vehicle v = findVehicleId(id);
+        if (v == null) {
+            System.out.println(ANSI_RED + "Vehicle not found." + ANSI_RESET);
+            return;
+        }
+        System.out.print("Enter new rider count: ");
+        try {
+            int count = Integer.parseInt(scanner.nextLine().trim());
+            v.setRidingPass(count);
+            System.out.println(ANSI_GREEN + "Rider count updated." + ANSI_RESET);
+        } catch (Exception e) {
+            System.out.println(ANSI_RED + "Invalid input." + ANSI_RESET);
+        }
+    }
+    // handling waiting passengers at a certain location
+    private static void setWaitingPassengers() {
+        System.out.print("Enter location ID: ");
+        String id = scanner.nextLine().trim();
+        Location l = findLocationId(id);
+        if (l == null) {
+            System.out.println(ANSI_RED + "Location not found." + ANSI_RESET);
+            return;
+        }
+        System.out.print("Enter new waiting passenger count: ");
+        try {
+            int count = Integer.parseInt(scanner.nextLine().trim());
+            l.setWaitingPassengers(count);
+            System.out.println(ANSI_GREEN + "Waiting passenger count updated." + ANSI_RESET);
+        } catch (Exception e) {
+            System.out.println(ANSI_RED + "Invalid input." + ANSI_RESET);
+        }
+    }
+
+    // these ranges are set to default values, but they can be updated later on here for a certain location
+    private static void setPassengerExchangeRanges() {
+        System.out.print("Enter location ID: ");
+        String id = scanner.nextLine().trim();
+        Location l = findLocationId(id);
+        if (l == null) {
+            System.out.println(ANSI_RED + "Location not found." + ANSI_RESET);
+            return;
+        }
+        try {
+            System.out.print("Enter debark min: ");
+            int debarkMin = Integer.parseInt(scanner.nextLine().trim());
+            System.out.print("Enter debark max: ");
+            int debarkMax = Integer.parseInt(scanner.nextLine().trim());
+            l.setDebarkRange(debarkMin, debarkMax);
+            System.out.print("Enter transfer min: ");
+            int transferMin = Integer.parseInt(scanner.nextLine().trim());
+            System.out.print("Enter transfer max: ");
+            int transferMax = Integer.parseInt(scanner.nextLine().trim());
+            l.setTransferRange(transferMin, transferMax);
+            System.out.print("Enter embark min: ");
+            int embarkMin = Integer.parseInt(scanner.nextLine().trim());
+            System.out.print("Enter embark max: ");
+            int embarkMax = Integer.parseInt(scanner.nextLine().trim());
+            l.setEmbarkRange(embarkMin, embarkMax);
+            System.out.println(ANSI_GREEN + "Passenger exchange ranges updated." + ANSI_RESET);
+        } catch (Exception e) {
+            System.out.println(ANSI_RED + "Invalid input." + ANSI_RESET);
+        }
     }
 
 }

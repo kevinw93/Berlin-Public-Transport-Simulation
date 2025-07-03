@@ -4,6 +4,7 @@ public class Vehicle implements Comparable<Vehicle> {
     private int capacity;
     private VehicleType vehicleType;
     private double speed;
+    private int ridingPass;
     private Route assignedRoute;
     private Location location;
     private int routePosition;
@@ -20,6 +21,7 @@ public class Vehicle implements Comparable<Vehicle> {
         this.vehicleType = type;
         this.capacity = capacity;
         this.speed = speed;
+        this.ridingPass = capacity / 4;
         this.routePosition = -1;
         this.legProgress = 0;
         this.assignedRoute = null;
@@ -40,6 +42,9 @@ public class Vehicle implements Comparable<Vehicle> {
     }
     public double getSpeed() {
         return speed;
+    }
+    public int getRidingPass() {
+        return ridingPass;
     }
     public Route getAssignedRoute() {
         return assignedRoute;
@@ -65,6 +70,14 @@ public class Vehicle implements Comparable<Vehicle> {
     public boolean goingRight() {
         return goingRight;
     }
+    // sets the number of passengers currently riding on the vehicle
+    public void setRidingPass(int passengers) {
+        if (passengers < 0 || passengers > capacity) {
+            throw new IllegalArgumentException("Invalid passenger count");
+        }
+        this.ridingPass = passengers;
+    }
+
     public void setVehicleType(VehicleType vehicleType) {
         this.vehicleType = vehicleType;
     }
@@ -94,6 +107,16 @@ public class Vehicle implements Comparable<Vehicle> {
 
     public void setGoingRight(boolean goingRight) {
         this.goingRight = goingRight;
+    }
+
+    public void setCapacity(int capacity) {
+        if (capacity < 0) {
+            throw new IllegalArgumentException("Capacity must be non-negative");
+        }
+        if (capacity < this.ridingPass) {
+            throw new IllegalArgumentException("Capacity cannot be less than current riders");
+        }
+        this.capacity = capacity;
     }
 
     // removes the vehicle from its assigned route and resets position
