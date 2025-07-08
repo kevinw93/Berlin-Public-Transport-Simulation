@@ -19,12 +19,15 @@ public class Main {
     private static List<Vehicle> vList = new ArrayList<>();
     private static List<Location> lList = new ArrayList<>();
     private static List<Route> rList = new ArrayList<>();
+    private static List<Hazard> hList = new ArrayList<>();
     private static SimulationManager simManager = SimulationManager.getInstance();
 
     
     public static void main(String[] args) {
         boolean exit = false;
         String menuState = "MAIN";
+
+        Event.setHazardList(hList);
 
         // program loop
         while (!exit) {
@@ -36,8 +39,9 @@ public class Main {
                     System.out.println("2. Location");
                     System.out.println("3. Route");
                     System.out.println("4. Simulation");
-                    System.out.println("5. Test Scenario Setup");
-                    System.out.println("6. Exit");
+                    System.out.println("5. Hazards");
+                    System.out.println("6. Test Scenario Setup");
+                    System.out.println("7. Exit");
                     System.out.print("Choose an option: ");
                     String mainSwitch = scanner.nextLine().trim();
 
@@ -55,13 +59,16 @@ public class Main {
                             menuState = "SIMULATION";
                             break;
                         case "5":
-                            setupTestScenario();
+                            menuState = "HAZARD";
                             break;
                         case "6":
+                            setupTestScenario();
+                            break;
+                        case "7":
                             exit = true;
                             break;
                         default:
-                            System.out.println(ANSI_RED + "Must enter 1-6, try again." + ANSI_RESET);
+                            System.out.println(ANSI_RED + "Must enter 1-5, try again." + ANSI_RESET);
                     }
                     break;
 
@@ -218,6 +225,32 @@ public class Main {
                             System.out.println(ANSI_RED + "Must enter 1-7, try again!!" + ANSI_RESET);
                     }
                     break;
+                case "HAZARD":
+                    System.out.println(ANSI_BLUE + "\nHazard Menu" + ANSI_RESET);
+                    System.out.println("1. Add a hazard");
+                    System.out.println("2. Display all hazards");
+                    System.out.println("3. Remove a hazard");
+                    System.out.println("4. Back to main menu");
+                    System.out.print("Choose an option: ");
+                    String hazSwitch = scanner.nextLine().trim();
+                    
+                    switch (hazSwitch) {
+                        case "1":
+                            addHazard();
+                            break;
+                        case "2":
+                            showHazard();
+                            break;
+                        case "3":
+                            removeHazard();
+                            break;
+                        case "4":
+                            menuState = "MAIN";
+                            break;
+                        default:
+                            System.out.println(ANSI_RED + "Must enter 1-4, try again!!" + ANSI_RESET);
+                    }
+                    break;
             }
         }
 
@@ -256,6 +289,11 @@ public class Main {
             System.out.println(ANSI_RED + "There is already a route with that ID! Try again" + ANSI_RESET);
             return;
 
+        }
+
+        if (findHazardId(vehicleID) != null) {
+            System.out.println(ANSI_RED + "There is already a hazard with that ID! Try again." + ANSI_RESET);
+            return;
         }
 
 
@@ -366,6 +404,12 @@ public class Main {
         }
         if (findRouteId(locationID) != null) {
             System.out.println(ANSI_RED + "There is already a route with that ID! Try again" + ANSI_RESET);
+            return;
+
+        }
+
+        if (findHazardId(locationID) != null) {
+            System.out.println(ANSI_RED + "There is already a hazard with that ID! Try again." + ANSI_RESET);
             return;
 
         }
@@ -484,6 +528,12 @@ public class Main {
         }
         if (findRouteId(routeID) != null) {
             System.out.println(ANSI_RED + "There is already a route with that ID! Try again." + ANSI_RESET);
+            return;
+
+        }
+
+        if (findHazardId(routeID) != null) {
+            System.out.println(ANSI_RED + "There is already a hazard with that ID! Try again." + ANSI_RESET);
             return;
 
         }
@@ -1126,6 +1176,266 @@ public class Main {
 
         System.out.println(ANSI_CYAN + "Scenario setup complete." + ANSI_RESET);
     }
+
+    // adding new hazard
+    private static void addHazard() {
+        System.out.println(ANSI_GREEN + "\nAdding Hazard" + ANSI_RESET);
+
+        System.out.print("Enter hazard ID: ");
+        String hazardID = scanner.nextLine().trim();
+
+        if (hazardID.length() > 99) {
+            System.out.println(ANSI_RED + "The hazard ID cannot be 100 characters or more! Try again." + ANSI_RESET);
+            return;
+        }
+
+        if (!hazardID.matches("[a-zA-Z0-9]+")) {
+            System.out.println(ANSI_RED + "The hazard ID must be alphanumeric! Try again." + ANSI_RESET);
+            return;
+        }
+
+        if (findVehicleId(hazardID) != null) {
+            System.out.println(ANSI_RED + "There is already a vehicle with that ID! Try again" + ANSI_RESET);
+            return;
+
+        }
+        if (findLocationId(hazardID) != null) {
+            System.out.println(ANSI_RED + "There is already a location with that ID! Try again" + ANSI_RESET);
+            return;
+
+        }
+        if (findRouteId(hazardID) != null) {
+            System.out.println(ANSI_RED + "There is already a route with that ID! Try again" + ANSI_RESET);
+            return;
+
+        }
+        if (findHazardId(hazardID) != null) {
+            System.out.println(ANSI_RED + "There is already a hazard with that ID! Try again." + ANSI_RESET);
+            return;
+        }
+
+        System.out.print("Enter hazard name: ");
+        String name = scanner.nextLine().trim();
+
+        System.out.println("Is this hazard at: ");
+        System.out.println("1. A single location");
+        System.out.println("2. A pair of locations");
+        System.out.print("Choose an option: ");
+        String scopeChoice = scanner.nextLine().trim();
+
+        Hazard hazard;
+        try {
+            System.out.println("Choose hazard type:");
+            System.out.println("1. Short-term (adds minutes)");
+            System.out.println("2. Long-term (multiplies duration)");
+            System.out.print("Choose an option: ");
+            String typeChoice = scanner.nextLine().trim();
+
+            HazardType type;
+            switch (typeChoice) {
+                case "1":
+                    type = new ShortTermHazardType();
+                    break;
+                case "2":
+                    type = new LongTermHazardType();
+                    break;
+                default:
+                    System.out.println(ANSI_RED + "Must enter, 1-2, try again!" + ANSI_RESET);
+                    return;
+            }
+
+            double impact;
+            
+            if (type instanceof ShortTermHazardType) {
+                System.out.print("Enter minutes of delay for the hazard: ");
+                try {
+                    int minutes = Integer.parseInt(scanner.nextLine().trim());
+                    if (minutes <= 0) {
+                        System.out.println(ANSI_RED + "The delay value must be positive!" + ANSI_RESET);
+                        return;
+
+                    }
+                    impact = minutes;
+
+                } catch (NumberFormatException e) {
+                    System.out.println(ANSI_RED + "You must enter an integer!" + ANSI_RESET);
+                    return;
+
+                }
+
+            } else {
+                System.out.print("Enter delay multiplier for the hazard: ");
+                impact = Double.parseDouble(scanner.nextLine().trim());
+                
+                if (impact < 1) {
+                    System.out.println(ANSI_RED + "The delay multiplier must be positive and greater than one!" + ANSI_RESET);
+                    return;
+
+                }
+            }
+
+            hazard = new Hazard(hazardID, name, type, impact);
+
+            if (scopeChoice.equals("1")) {
+                System.out.print("Enter location ID: ");
+                String locId = scanner.nextLine().trim();
+                Location loc = findLocationId(locId);
+                if (loc == null) {
+                    System.out.println(ANSI_RED + "No location found with ID: " + locId + ANSI_RESET);
+                    return;
+                }
+                hazard.setLocation(loc);
+                loc.setHazard(hazard);
+
+            } else if (scopeChoice.equals("2")) {
+                
+                if (rList.isEmpty()) {
+                    System.out.println(ANSI_RED + "No routes exist. Create a route first!" + ANSI_RESET);
+                    return;
+                }
+
+                System.out.println("Select a route for this hazard:");
+                for (int i = 0; i < rList.size(); i++) {
+                    System.out.printf("%d. ID: %s | Name: %s\n",
+                            (i + 1), rList.get(i).getRouteId(), rList.get(i).getName());
+                }
+                System.out.print("Enter route number: ");
+                int routeChoice;
+                try {
+                    routeChoice = Integer.parseInt(scanner.nextLine().trim());
+                    if (routeChoice < 1 || routeChoice > rList.size()) {
+                        System.out.println(ANSI_RED + "Invalid route selection." + ANSI_RESET);
+                        return;
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println(ANSI_RED + "Must enter a valid integer." + ANSI_RESET);
+                    return;
+                }
+
+                Route selectedRoute = rList.get(routeChoice - 1);
+                List<Location> locs = selectedRoute.getLocations();
+                if (locs.size() < 2) {
+                    System.out.println(ANSI_RED + "Route does not have enough locations to define a leg." + ANSI_RESET);
+                    return;
+                }
+
+                System.out.println("Locations on route " + selectedRoute.getName() + ":");
+                for (int i = 0; i < locs.size(); i++) {
+                    System.out.printf("%d. ID: %s | Name: %s\n", (i + 1),
+                            locs.get(i).getLocationId(), locs.get(i).getName());
+                }
+
+                System.out.print("Enter index of first location (1-based): ");
+                int index1;
+                try {
+                    index1 = Integer.parseInt(scanner.nextLine().trim()) - 1;
+                    if (index1 < 0 || index1 > locs.size() - 1) {
+                        System.out.println(ANSI_RED + "Invalid index. Must select a location that has a next location." + ANSI_RESET);
+                        return;
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println(ANSI_RED + "Must enter an integer." + ANSI_RESET);
+                    return;
+                }
+
+                Location locA = locs.get(index1);
+                Location locB = locs.get((index1 + 1) % locs.size());
+                System.out.println("Selected leg: " + locA.getName() + " going to/from " + locB.getName());
+                hazard.setLocations(locA, locB);
+            } else {
+                System.out.println(ANSI_RED + "Must enter 1 or 2 for hazard scope." + ANSI_RESET);
+                return;
+            }
+
+            // check for existing hazard at matching location and replace if there is one
+            Hazard existingHazard = null;
+
+            for (Hazard h : hList) {
+                if (hazard.getLocation() != null && h.getLocation() != null) {
+                    // for single location
+                    if (hazard.getLocation().getLocationId().equals(h.getLocation().getLocationId())) {
+                        existingHazard = h;
+                        break;
+                    }
+                    // for double location
+                } else if (hazard.getLocationA() != null && hazard.getLocationB() != null
+                        && h.getLocationA() != null && h.getLocationB() != null) {
+                    boolean sameOrder = hazard.getLocationA().getLocationId().equals(h.getLocationA().getLocationId())
+                            && hazard.getLocationB().getLocationId().equals(h.getLocationB().getLocationId());
+
+                    boolean reverseOrder = hazard.getLocationA().getLocationId().equals(h.getLocationB().getLocationId())
+                            && hazard.getLocationB().getLocationId().equals(h.getLocationA().getLocationId());
+
+                    if (sameOrder || reverseOrder) {
+                        existingHazard = h;
+                        break;
+
+                    }
+                }
+            }
+
+            // replacing hazard
+            if (existingHazard != null) {
+                hList.remove(existingHazard);
+                System.out.println(ANSI_YELLOW + "An existing hazard at the same location(s) was replaced." + ANSI_RESET);
+            }
+
+            hList.add(hazard);
+            System.out.println(ANSI_CYAN + "Hazard added successfully." + ANSI_RESET);
+
+        } catch (NumberFormatException e) {
+            System.out.println(ANSI_RED + "The delay value must be a number! Try again." + ANSI_RESET);
+        }
+    }
+
+    // showing list of hazards
+    private static void showHazard() {
+
+        System.out.println(ANSI_GREEN + "\nDisplaying Hazards" + ANSI_RESET);
+        if (hList.isEmpty()) {
+            System.out.println("There are no hazards to display!");
+            return;
+        }
+
+        List<Hazard> sorted = new ArrayList<>(hList);
+        sorted.sort(null);
+        for (Hazard h : sorted) {
+            System.out.println(h.toString());
+        }
+
+    }
+
+    // removing hazards
+    private static void removeHazard() {
+        System.out.println(ANSI_YELLOW + "\nRemoving Hazard" + ANSI_RESET);
+        System.out.print("Enter hazard ID to remove: ");
+        String hazardID = scanner.nextLine().trim();
+
+        Hazard hazard = findHazardId(hazardID);
+        if (hazard == null) {
+            System.out.println(ANSI_RED + "No hazard found with ID: " + hazardID + ANSI_RESET);
+            return;
+        }
+        if (hazard.getLocation() != null) {
+            Location loc = hazard.getLocation();
+            loc.setHazard(null);
+        }
+        
+        hList.remove(hazard);
+        System.out.println(ANSI_CYAN + "Hazard " + hazardID + " removed successfully." + ANSI_RESET);
+    }
+    
+    // finding hazard id for use to check for duplicates
+    private static Hazard findHazardId(String id) {
+    for (Hazard h : hList) {
+        if (h.getHazardId().equals(id)) {
+            return h;
+
+        }
+    }
+    return null;
+}
+
 
     // handling changing/initializing vehicle capacity
     private static void setVehicleCapacity() {

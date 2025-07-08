@@ -10,6 +10,7 @@ public class Location implements Comparable<Location> {
     private int transferMax = 2;
     private int embarkMin = 1;
     private int embarkMax = 3;
+    private Hazard hazard;
 
     public Location(String locationId, String name, double x, double y, int pass) {
         if (locationId == null || locationId.trim().isEmpty()) {
@@ -22,6 +23,7 @@ public class Location implements Comparable<Location> {
         this.name = name.trim();
         this.xCoord = x;
         this.yCoord = y;
+        this.hazard = null;
         this.waitingPassengers = pass;
     }
 
@@ -39,6 +41,14 @@ public class Location implements Comparable<Location> {
     }
     public int getWaitingPassengers() {
         return waitingPassengers;
+    }
+
+    public Hazard getHazard() {
+        return hazard;
+    }
+
+    public void setHazard(Hazard hazard) {
+        this.hazard = hazard;
     }
 
     public void setWaitingPassengers(int passengers) {

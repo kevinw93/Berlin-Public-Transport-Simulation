@@ -12,6 +12,7 @@ public class Event implements Comparable<Event> {
     private Vehicle vehicle;
     private Location location;
     private EventType eventType;
+    static List<Hazard> hList;
 
         
     public Event(int eventTime, Vehicle vehicle, Location location, EventType eventType) {
@@ -35,6 +36,10 @@ public class Event implements Comparable<Event> {
 
     public EventType getEventType() {
         return eventType;
+    }
+
+    public static void setHazardList(List<Hazard> hazList) {
+        hList = hazList;
     }
 
     // executes the event based on its type (arrival or departure)
@@ -103,8 +108,17 @@ public class Event implements Comparable<Event> {
         System.out.printf("  Riders now: %d\n", ridePassNext);
         System.out.printf("  Waiting now: %d\n", waitPassNext);
 
-        // passenger exchange takes 1 min
-        int departureTime = eventTime + 1;
+        Hazard locHazard = location.getHazard();
+    
+        // default wait time at station is 1 min
+        double def = 1.0;
+
+        if (locHazard != null) {
+            def = locHazard.getHazardType().applyImpact(def, locHazard.getImpactValue());
+            System.out.println(locHazard.getHazardType().getImpactString(locHazard.getImpactValue()));
+        }
+
+        int departureTime = eventTime + (int) def;
         Event departureEvent = new Event(departureTime, vehicle, location, EventType.DEPARTURE);
         SimulationManager.getInstance().addEvent(departureEvent);
     }
@@ -131,6 +145,11 @@ public class Event implements Comparable<Event> {
             double speed = vehicle.getSpeed();
             int travelTimeMinutes = Math.max(1, (int)(distance / speed * 60));
 
+            Hazard legHazard = findHazardOnLeg(location, nextLocation);
+            if (legHazard != null) {
+                travelTimeMinutes = (int) legHazard.getHazardType().applyImpact(travelTimeMinutes, legHazard.getImpactValue());
+                System.out.println(legHazard.getHazardType().getImpactString(legHazard.getImpactValue()));
+            }
             vehicle.setRoutePosition(nextPos);
             vehicle.setInTransit(true);
             
@@ -141,6 +160,26 @@ public class Event implements Comparable<Event> {
         }
     }
 
+    // finds any hazard that affects travel between two specific locations
+    private Hazard findHazardOnLeg(Location locA, Location locB) {
+        if (hList == null) {
+            return null; // No hazards to check
+        }
+        
+        for (Hazard h : hList) {
+            if (h.getLocationA() != null && h.getLocationB() != null) {
+                boolean sameOrder = h.getLocationA().getLocationId().equals(locA.getLocationId())
+                        && h.getLocationB().getLocationId().equals(locB.getLocationId());
+                boolean reverseOrder = h.getLocationA().getLocationId().equals(locB.getLocationId())
+                        && h.getLocationB().getLocationId().equals(locA.getLocationId());
+                if (sameOrder || reverseOrder) {
+                    return h;
+                }
+            }
+        }
+        return null;
+    }
+    
     public String getDescription() {
         String action = (eventType == EventType.ARRIVAL) ? "Arrival" : "Departure";
         String preposition = (eventType == EventType.ARRIVAL) ? "at" : "from";
