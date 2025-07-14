@@ -144,7 +144,7 @@ public class Vehicle implements Comparable<Vehicle> {
         String transitInfo = inTransit ? " (In Transit)" : "";
         
         String format = "ID: %s | Name: %s | Type: %s | Capacity: %d | Speed: %.2f | Location: %s | Route: %s%s";
-        return String.format(format, this.vehicleId, this.name, this.vehicleType, 
+        return String.format(format, this.vehicleId, this.name, this.vehicleType.getTypeName(), 
                            this.capacity, this.speed, locationInfo, routeInfo, transitInfo);
     }
 

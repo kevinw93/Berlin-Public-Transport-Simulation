@@ -308,21 +308,21 @@ public class Main {
             System.out.println("4. Bus");
             System.out.print("Choose an option: ");
             String typeSwitch = scanner.nextLine().trim();
-            VehicleType type = VehicleType.S_Bahn;
+            VehicleType type = new SbahnType();
             
                     
                 switch (typeSwitch) {
                     case "1":
-                        type = VehicleType.S_Bahn;
+                        type = new SbahnType();
                         break;
                     case "2":
-                        type = VehicleType.U_Bahn;
+                        type = new UbahnType();
                         break;
                     case "3":
-                        type = VehicleType.Tram;
+                        type = new TramType();
                         break;
                     case "4":
-                        type = VehicleType.Bus;
+                        type = new BusType();
                         break;
                     default:
                         throw new IllegalArgumentException(ANSI_RED + "Must enter 1-4, try again." + ANSI_RESET);
@@ -497,7 +497,7 @@ public class Main {
         sorted.sort(null);
         for (Vehicle v : sorted) { 
             System.out.printf("ID: %s | Name: %s | Type: %s\n",
-                v.getVehicleId(), v.getName(), v.getVehicleType());
+                v.getVehicleId(), v.getName(), v.getVehicleType().getTypeName());
         } 
     } 
 
@@ -851,7 +851,7 @@ public class Main {
         sorted.sort(null);
         for (Vehicle v : sorted) { 
             System.out.printf("ID: %s | Name: %s | Type: %s\n", 
-                v.getVehicleId(), v.getName(), v.getVehicleType()); 
+                v.getVehicleId(), v.getName(), v.getVehicleType().getTypeName()); 
         } 
     } 
 
@@ -1110,7 +1110,7 @@ public class Main {
         rList.add(ring3);
 
         // VEHICLES
-        Vehicle sbahn_A = new Vehicle("v1", "sbahn_A", VehicleType.S_Bahn, 6, 60);
+        Vehicle sbahn_A = new Vehicle("v1", "sbahn_A", new SbahnType(), 6, 60);
         sbahn_A.setLocation(stadium);
         sbahn_A.setAssignedRoute(line1);
         sbahn_A.setRoutePosition(0);
@@ -1118,7 +1118,7 @@ public class Main {
         line1.addVehicle(sbahn_A);
         vList.add(sbahn_A);
 
-        Vehicle ubahn_A = new Vehicle("v2", "ubahn_A", VehicleType.U_Bahn, 5, 45);
+        Vehicle ubahn_A = new Vehicle("v2", "ubahn_A", new UbahnType(), 5, 45);
         ubahn_A.setLocation(port);
         ubahn_A.setAssignedRoute(line2);
         ubahn_A.setRoutePosition(0);
@@ -1126,7 +1126,7 @@ public class Main {
         line2.addVehicle(ubahn_A);
         vList.add(ubahn_A);
 
-        Vehicle bus_A = new Vehicle("v3", "bus_A", VehicleType.Bus, 3, 35);
+        Vehicle bus_A = new Vehicle("v3", "bus_A", new BusType(), 3, 35);
         bus_A.setLocation(north);
         bus_A.setAssignedRoute(ring2);
         bus_A.setRoutePosition(1);
@@ -1134,7 +1134,7 @@ public class Main {
         ring2.addVehicle(bus_A);
         vList.add(bus_A);
 
-        Vehicle sbahn_C = new Vehicle("v4", "sbahn_C", VehicleType.S_Bahn, 8, 60);
+        Vehicle sbahn_C = new Vehicle("v4", "sbahn_C", new SbahnType(), 8, 60);
         sbahn_C.setLocation(bahnhof);
         sbahn_C.setAssignedRoute(ring1);
         sbahn_C.setRoutePosition(2);
@@ -1142,7 +1142,7 @@ public class Main {
         ring1.addVehicle(sbahn_C);
         vList.add(sbahn_C);
 
-        Vehicle tram_A = new Vehicle("v5", "tram_A", VehicleType.Tram, 4, 40);
+        Vehicle tram_A = new Vehicle("v5", "tram_A", new TramType(), 4, 40);
         tram_A.setLocation(bahnhof);
         tram_A.setAssignedRoute(ring3);
         tram_A.setRoutePosition(2);
@@ -1150,7 +1150,7 @@ public class Main {
         ring3.addVehicle(tram_A);
         vList.add(tram_A);
 
-        Vehicle sbahn_B = new Vehicle("v6", "sbahn_B", VehicleType.S_Bahn, 6, 60);
+        Vehicle sbahn_B = new Vehicle("v6", "sbahn_B", new SbahnType(), 6, 60);
         sbahn_B.setLocation(east);
         sbahn_B.setAssignedRoute(line1);
         sbahn_B.setRoutePosition(6);
@@ -1158,7 +1158,7 @@ public class Main {
         line1.addVehicle(sbahn_B);
         vList.add(sbahn_B);
 
-        Vehicle ubahn_C = new Vehicle("v7", "ubahn_C", VehicleType.U_Bahn, 5, 45);
+        Vehicle ubahn_C = new Vehicle("v7", "ubahn_C", new UbahnType(), 5, 45);
         ubahn_C.setLocation(east);
         ubahn_C.setAssignedRoute(line2);
         ubahn_C.setRoutePosition(6);
@@ -1166,7 +1166,7 @@ public class Main {
         line2.addVehicle(ubahn_C);
         vList.add(ubahn_C);
 
-        Vehicle ubahn_B = new Vehicle("v8", "ubahn_B", VehicleType.U_Bahn, 5, 45);
+        Vehicle ubahn_B = new Vehicle("v8", "ubahn_B", new UbahnType(), 5, 45);
         ubahn_B.setLocation(tower);
         ubahn_B.setAssignedRoute(line3);
         ubahn_B.setRoutePosition(7);
