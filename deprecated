@@ -497,7 +497,7 @@ public class Main {
         sorted.sort(null);
         for (Vehicle v : sorted) { 
             System.out.printf("ID: %s | Name: %s | Type: %s\n",
-                v.getVehicleId(), v.getName(), v.getVehicleType().getTypeName());
+                v.getVehicleId(), v.getName(), v.getVehicleType());
         } 
     } 
 
@@ -851,7 +851,7 @@ public class Main {
         sorted.sort(null);
         for (Vehicle v : sorted) { 
             System.out.printf("ID: %s | Name: %s | Type: %s\n", 
-                v.getVehicleId(), v.getName(), v.getVehicleType().getTypeName()); 
+                v.getVehicleId(), v.getName(), v.getVehicleType()); 
         } 
     } 
 
@@ -1110,7 +1110,7 @@ public class Main {
         rList.add(ring3);
 
         // VEHICLES
-        Vehicle sbahn_A = new Vehicle("v1", "sbahn_A", new SbahnType(), 6, 60);
+        Vehicle sbahn_A = new Vehicle("v1", "sbahn_A", VehicleType.S_Bahn, 6, 60);
         sbahn_A.setLocation(stadium);
         sbahn_A.setAssignedRoute(line1);
         sbahn_A.setRoutePosition(0);
@@ -1118,7 +1118,7 @@ public class Main {
         line1.addVehicle(sbahn_A);
         vList.add(sbahn_A);
 
-        Vehicle ubahn_A = new Vehicle("v2", "ubahn_A", new UbahnType(), 5, 45);
+        Vehicle ubahn_A = new Vehicle("v2", "ubahn_A", VehicleType.U_Bahn, 5, 45);
         ubahn_A.setLocation(port);
         ubahn_A.setAssignedRoute(line2);
         ubahn_A.setRoutePosition(0);
@@ -1126,7 +1126,7 @@ public class Main {
         line2.addVehicle(ubahn_A);
         vList.add(ubahn_A);
 
-        Vehicle bus_A = new Vehicle("v3", "bus_A", new BusType(), 3, 35);
+        Vehicle bus_A = new Vehicle("v3", "bus_A", VehicleType.Bus, 3, 35);
         bus_A.setLocation(north);
         bus_A.setAssignedRoute(ring2);
         bus_A.setRoutePosition(1);
@@ -1134,7 +1134,7 @@ public class Main {
         ring2.addVehicle(bus_A);
         vList.add(bus_A);
 
-        Vehicle sbahn_C = new Vehicle("v4", "sbahn_C", new SbahnType(), 8, 60);
+        Vehicle sbahn_C = new Vehicle("v4", "sbahn_C", VehicleType.S_Bahn, 8, 60);
         sbahn_C.setLocation(bahnhof);
         sbahn_C.setAssignedRoute(ring1);
         sbahn_C.setRoutePosition(2);
@@ -1142,7 +1142,7 @@ public class Main {
         ring1.addVehicle(sbahn_C);
         vList.add(sbahn_C);
 
-        Vehicle tram_A = new Vehicle("v5", "tram_A", new TramType(), 4, 40);
+        Vehicle tram_A = new Vehicle("v5", "tram_A", VehicleType.Tram, 4, 40);
         tram_A.setLocation(bahnhof);
         tram_A.setAssignedRoute(ring3);
         tram_A.setRoutePosition(2);
@@ -1150,7 +1150,7 @@ public class Main {
         ring3.addVehicle(tram_A);
         vList.add(tram_A);
 
-        Vehicle sbahn_B = new Vehicle("v6", "sbahn_B", new SbahnType(), 6, 60);
+        Vehicle sbahn_B = new Vehicle("v6", "sbahn_B", VehicleType.S_Bahn, 6, 60);
         sbahn_B.setLocation(east);
         sbahn_B.setAssignedRoute(line1);
         sbahn_B.setRoutePosition(6);
@@ -1158,7 +1158,7 @@ public class Main {
         line1.addVehicle(sbahn_B);
         vList.add(sbahn_B);
 
-        Vehicle ubahn_C = new Vehicle("v7", "ubahn_C", new UbahnType(), 5, 45);
+        Vehicle ubahn_C = new Vehicle("v7", "ubahn_C", VehicleType.U_Bahn, 5, 45);
         ubahn_C.setLocation(east);
         ubahn_C.setAssignedRoute(line2);
         ubahn_C.setRoutePosition(6);
@@ -1166,7 +1166,7 @@ public class Main {
         line2.addVehicle(ubahn_C);
         vList.add(ubahn_C);
 
-        Vehicle ubahn_B = new Vehicle("v8", "ubahn_B", new UbahnType(), 5, 45);
+        Vehicle ubahn_B = new Vehicle("v8", "ubahn_B", UbahnType, 5, 45);
         ubahn_B.setLocation(tower);
         ubahn_B.setAssignedRoute(line3);
         ubahn_B.setRoutePosition(7);
@@ -1528,3 +1528,266 @@ public class Main {
 
 }
 
+
+// ROUTES
+Route line1 = new Route("r1", "line_1");
+line1.addLocation(stadium, 0);
+line1.addLocation(west, 1);
+line1.addLocation(bahnhof, 2);
+line1.addLocation(tower, 3);
+line1.addLocation(east, 4);
+line1.addLocation(airport, 5);
+line1.addLocation(east, 6);
+line1.addLocation(tower, 7);
+line1.addLocation(bahnhof, 8);
+line1.addLocation(west, 9);
+rList.add(line1);
+
+Route line2 = new Route("r2", "line_2");
+line2.addLocation(port, 0);
+line2.addLocation(north, 1);
+line2.addLocation(bahnhof, 2);
+line2.addLocation(west, 3);
+line2.addLocation(castle, 4);
+line2.addLocation(west, 5);
+line2.addLocation(bahnhof, 6);
+line2.addLocation(north, 7);
+rList.add(line2);
+
+Route line3 = new Route("r3", "line_3");
+line3.addLocation(gate, 0);
+line3.addLocation(north, 1);
+line3.addLocation(bahnhof, 2);
+line3.addLocation(tower, 3);
+line3.addLocation(south, 4);
+line3.addLocation(tower, 5);
+line3.addLocation(bahnhof, 6);
+line3.addLocation(north, 7);
+rList.add(line3);
+
+Route ring1 = new Route("r4", "ring_1");
+ring1.addLocation(south, 0);
+ring1.addLocation(castle, 1);
+ring1.addLocation(bahnhof, 2);
+ring1.addLocation(tower, 3);
+ring1.addLocation(east, 4);
+ring1.addLocation(tower, 5);
+ring1.addLocation(bahnhof, 6);
+ring1.addLocation(north, 7);
+rList.add(ring1);
+
+Route ring2 = new Route("r5", "ring_2");
+ring2.addLocation(bahnhof, 0);
+ring2.addLocation(museum, 1);
+ring2.addLocation(tower, 2);
+ring2.addLocation(bahnhof, 3);
+ring2.addLocation(tower, 4);
+ring2.addLocation(bahnhof, 5);
+ring2.addLocation(north, 6);
+ring2.addLocation(north, 7);
+rList.add(ring2);
+
+Route ring3 = new Route("r6", "ring_3");
+ring3.addLocation(north, 0);
+ring3.addLocation(bahnhof, 1);
+ring3.addLocation(north, 2);
+ring3.addLocation(port, 3);
+ring3.addLocation(north, 4);
+ring3.addLocation(gate, 5);
+rList.add(ring3);
+
+// VEHICLES
+Vehicle sbahn_A = new Vehicle("v1", "sbahn_A", VehicleType.SBahn, 6, 2);
+sbahn_A.setLocation(stadium);
+sbahn_A.setAssignedRoute(line1);
+sbahn_A.setRoutePosition(0);
+sbahn_A.setGoingRight(true);
+line1.addVehicle(sbahn_A);
+vList.add(sbahn_A);
+
+Vehicle ubahn_A = new Vehicle("v2", "ubahn_A", VehicleType.UBahn, 5, 3);
+ubahn_A.setLocation(port);
+ubahn_A.setAssignedRoute(line2);
+ubahn_A.setRoutePosition(0);
+ubahn_A.setGoingRight(true);
+line2.addVehicle(ubahn_A);
+vList.add(ubahn_A);
+
+Vehicle bus_A = new Vehicle("v3", "bus_A", VehicleType.Bus, 3, 3);
+bus_A.setLocation(north);
+bus_A.setAssignedRoute(ring2);
+bus_A.setRoutePosition(1);
+bus_A.setGoingRight(true);
+ring2.addVehicle(bus_A);
+vList.add(bus_A);
+
+Vehicle sbahn_C = new Vehicle("v4", "sbahn_C", VehicleType.SBahn, 8, 7);
+sbahn_C.setLocation(bahnhof);
+sbahn_C.setAssignedRoute(ring1);
+sbahn_C.setRoutePosition(2);
+sbahn_C.setGoingRight(true);
+ring1.addVehicle(sbahn_C);
+vList.add(sbahn_C);
+
+Vehicle tram_A = new Vehicle("v5", "tram_A", VehicleType.Tram, 4, 4);
+tram_A.setLocation(bahnhof);
+tram_A.setAssignedRoute(ring3);
+tram_A.setRoutePosition(2);
+tram_A.setGoingRight(true);
+ring3.addVehicle(tram_A);
+vList.add(tram_A);
+
+Vehicle sbahn_B = new Vehicle("v6", "sbahn_B", VehicleType.SBahn, 6, 3);
+sbahn_B.setLocation(east);
+sbahn_B.setAssignedRoute(line1);
+sbahn_B.setRoutePosition(6);
+sbahn_B.setGoingRight(true);
+line1.addVehicle(sbahn_B);
+vList.add(sbahn_B);
+
+Vehicle ubahn_C = new Vehicle("v7", "ubahn_C", VehicleType.UBahn, 5, 5);
+ubahn_C.setLocation(east);
+ubahn_C.setAssignedRoute(line2);
+ubahn_C.setRoutePosition(6);
+ubahn_C.setGoingRight(true);
+line2.addVehicle(ubahn_C);
+vList.add(ubahn_C);
+
+Vehicle ubahn_B = new Vehicle("v8", "ubahn_B", VehicleType.UBahn, 5, 2);
+ubahn_B.setLocation(tower);
+ubahn_B.setAssignedRoute(line3);
+ubahn_B.setRoutePosition(7);
+ubahn_B.setGoingRight(true);
+line3.addVehicle(ubahn_B);
+vList.add(ubahn_B);
+// ROUTES
+Route line1 = new Route("r1", "line_1");
+line1.addLocation(stadium, 0);
+line1.addLocation(west, 1);
+line1.addLocation(bahnhof, 2);
+line1.addLocation(tower, 3);
+line1.addLocation(east, 4);
+line1.addLocation(airport, 5);
+line1.addLocation(east, 6);
+line1.addLocation(tower, 7);
+line1.addLocation(bahnhof, 8);
+line1.addLocation(west, 9);
+rList.add(line1);
+
+Route line2 = new Route("r2", "line_2");
+line2.addLocation(port, 0);
+line2.addLocation(north, 1);
+line2.addLocation(bahnhof, 2);
+line2.addLocation(west, 3);
+line2.addLocation(castle, 4);
+line2.addLocation(west, 5);
+line2.addLocation(bahnhof, 6);
+line2.addLocation(north, 7);
+rList.add(line2);
+
+Route line3 = new Route("r3", "line_3");
+line3.addLocation(gate, 0);
+line3.addLocation(north, 1);
+line3.addLocation(bahnhof, 2);
+line3.addLocation(tower, 3);
+line3.addLocation(south, 4);
+line3.addLocation(tower, 5);
+line3.addLocation(bahnhof, 6);
+line3.addLocation(north, 7);
+rList.add(line3);
+
+Route ring1 = new Route("r4", "ring_1");
+ring1.addLocation(south, 0);
+ring1.addLocation(castle, 1);
+ring1.addLocation(bahnhof, 2);
+ring1.addLocation(tower, 3);
+ring1.addLocation(east, 4);
+ring1.addLocation(tower, 5);
+ring1.addLocation(bahnhof, 6);
+ring1.addLocation(north, 7);
+rList.add(ring1);
+
+Route ring2 = new Route("r5", "ring_2");
+ring2.addLocation(bahnhof, 0);
+ring2.addLocation(museum, 1);
+ring2.addLocation(tower, 2);
+ring2.addLocation(bahnhof, 3);
+ring2.addLocation(tower, 4);
+ring2.addLocation(bahnhof, 5);
+ring2.addLocation(north, 6);
+ring2.addLocation(north, 7);
+rList.add(ring2);
+
+Route ring3 = new Route("r6", "ring_3");
+ring3.addLocation(north, 0);
+ring3.addLocation(bahnhof, 1);
+ring3.addLocation(north, 2);
+ring3.addLocation(port, 3);
+ring3.addLocation(north, 4);
+ring3.addLocation(gate, 5);
+rList.add(ring3);
+
+// VEHICLES
+Vehicle sbahn_A = new Vehicle("v1", "sbahn_A", VehicleType.SBahn, 6, 2);
+sbahn_A.setLocation(stadium);
+sbahn_A.setAssignedRoute(line1);
+sbahn_A.setRoutePosition(0);
+sbahn_A.setGoingRight(true);
+line1.addVehicle(sbahn_A);
+vList.add(sbahn_A);
+
+Vehicle ubahn_A = new Vehicle("v2", "ubahn_A", VehicleType.UBahn, 5, 3);
+ubahn_A.setLocation(port);
+ubahn_A.setAssignedRoute(line2);
+ubahn_A.setRoutePosition(0);
+ubahn_A.setGoingRight(true);
+line2.addVehicle(ubahn_A);
+vList.add(ubahn_A);
+
+Vehicle bus_A = new Vehicle("v3", "bus_A", VehicleType.Bus, 3, 3);
+bus_A.setLocation(north);
+bus_A.setAssignedRoute(ring2);
+bus_A.setRoutePosition(1);
+bus_A.setGoingRight(true);
+ring2.addVehicle(bus_A);
+vList.add(bus_A);
+
+Vehicle sbahn_C = new Vehicle("v4", "sbahn_C", VehicleType.SBahn, 8, 7);
+sbahn_C.setLocation(bahnhof);
+sbahn_C.setAssignedRoute(ring1);
+sbahn_C.setRoutePosition(2);
+sbahn_C.setGoingRight(true);
+ring1.addVehicle(sbahn_C);
+vList.add(sbahn_C);
+
+Vehicle tram_A = new Vehicle("v5", "tram_A", VehicleType.Tram, 4, 4);
+tram_A.setLocation(bahnhof);
+tram_A.setAssignedRoute(ring3);
+tram_A.setRoutePosition(2);
+tram_A.setGoingRight(true);
+ring3.addVehicle(tram_A);
+vList.add(tram_A);
+
+Vehicle sbahn_B = new Vehicle("v6", "sbahn_B", VehicleType.SBahn, 6, 3);
+sbahn_B.setLocation(east);
+sbahn_B.setAssignedRoute(line1);
+sbahn_B.setRoutePosition(6);
+sbahn_B.setGoingRight(true);
+line1.addVehicle(sbahn_B);
+vList.add(sbahn_B);
+
+Vehicle ubahn_C = new Vehicle("v7", "ubahn_C", VehicleType.UBahn, 5, 5);
+ubahn_C.setLocation(east);
+ubahn_C.setAssignedRoute(line2);
+ubahn_C.setRoutePosition(6);
+ubahn_C.setGoingRight(true);
+line2.addVehicle(ubahn_C);
+vList.add(ubahn_C);
+
+Vehicle ubahn_B = new Vehicle("v8", "ubahn_B", VehicleType.UBahn, 5, 2);
+ubahn_B.setLocation(tower);
+ubahn_B.setAssignedRoute(line3);
+ubahn_B.setRoutePosition(7);
+ubahn_B.setGoingRight(true);
+line3.addVehicle(ubahn_B);
+vList.add(ubahn_B);
